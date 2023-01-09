@@ -4,17 +4,16 @@
   font-weight: normal;
 }
 
-.carousel-overlay {
-  position: absolute;
-  top: 60px;
-  left: 0;
-  right: 0px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+body{
+  background-color: #F3F8FC;
 }
 
-img{
-    opacity: 0.5;
-}
+
+
+
+
+
+
+
+
+
