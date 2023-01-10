@@ -1,6 +1,7 @@
 const button = document.querySelector("#search");
 const inputField = document.querySelector("#inputField");
 const dataContainer = document.querySelector("#data-container");
+const data2Container = document.querySelector("#data2-container");
 
 button.addEventListener("click", (event) => {
   // Prevenire l'invio del form
@@ -66,4 +67,45 @@ function displayTopCities() {
     });
 }
 
+function displayWorstCities() {
+  axios
+    .get("https://api.teleport.org/api/urban_areas/")
+    .then((response) => {
+      const cities = response.data._links["ua:item"];
+
+      const promises = cities.map((city) => axios.get(city.href));
+      Promise.all(promises)
+        .then((responses) => {
+          const citiesWithScores = responses.map((response, i) => {
+            const cityScores = response.data._links["ua:scores"];
+            return axios.get(cityScores.href).then((res) => {
+              return {
+                name: cities[i].name,
+                score: res.data.teleport_city_score,
+              };
+            });
+          });
+
+          return Promise.all(citiesWithScores);
+        })
+        .then((citiesWithScores) => {
+          citiesWithScores.sort((a, b) => a.score - b.score);
+          const worstCities = citiesWithScores.slice(0, 10);
+          worstCities.forEach((city) => {
+            const cityDiv = document.createElement("div");
+            cityDiv.innerHTML = `
+                <h2>${city.name}</h2>
+                <p>Teleport City Score: ${city.score}</p>
+              `;
+            data2Container.appendChild(cityDiv);
+          });
+        })
+        .catch((error) => console.error(error));
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
 window.addEventListener("load", displayTopCities);
+window.addEventListener("load", displayWorstCities);
