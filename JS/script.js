@@ -31,38 +31,35 @@ function displayTopCities() {
     .get("https://api.teleport.org/api/urban_areas/")
     .then((response) => {
       const cities = response.data._links["ua:item"];
-      // per ogni città presente in ua:item
-      for (let i = 0; i < cities.length; i++) {
-        axios
-          .get(cities[i].href)
-          .then((response) => {
-            const city = response.data._links["ua:scores"];
-            axios.get(city.href).then((response) => {
-              const punteggio = response.data.teleport_city_score;
-              console.log(punteggio);
-              cities[i].teleport_city_score = punteggio;
-              if (i === cities.length - 1) {
-                // tutte le chiamate sono state completate
-                cities.sort((a, b) => {
-                  return b.teleport_city_score - a.teleport_city_score;
-                });
-                // prendi le prime 10 città
-                const topCities = cities.slice(0, 10);
-                topCities.forEach((city) => {
-                  const cityDiv = document.createElement("div");
-                  cityDiv.innerHTML = `
-                 <h2>${city.name}</h2>
-                 <p>Teleport City Score: ${city.teleport_city_score}</p>
-               `;
-                  dataContainer.appendChild(cityDiv);
-                });
-              }
+
+      const promises = cities.map((city) => axios.get(city.href));
+      Promise.all(promises)
+        .then((responses) => {
+          const citiesWithScores = responses.map((response, i) => {
+            const cityScores = response.data._links["ua:scores"];
+            return axios.get(cityScores.href).then((res) => {
+              return {
+                name: cities[i].name,
+                score: res.data.teleport_city_score,
+              };
             });
-          })
-          .catch((error) => {
-            console.error(error);
           });
-      }
+
+          return Promise.all(citiesWithScores);
+        })
+        .then((citiesWithScores) => {
+          citiesWithScores.sort((a, b) => b.score - a.score);
+          const topCities = citiesWithScores.slice(0, 10);
+          topCities.forEach((city) => {
+            const cityDiv = document.createElement("div");
+            cityDiv.innerHTML = `
+                <h2>${city.name}</h2>
+                <p>Teleport City Score: ${city.score}</p>
+              `;
+            dataContainer.appendChild(cityDiv);
+          });
+        })
+        .catch((error) => console.error(error));
     })
     .catch((error) => {
       console.error(error);
