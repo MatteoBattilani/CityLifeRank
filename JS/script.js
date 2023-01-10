@@ -30,45 +30,43 @@ function displayTopCities() {
   axios
     .get("https://api.teleport.org/api/urban_areas/")
     .then((response) => {
-      // Estrarre le città dalla risposta
       const cities = response.data._links["ua:item"];
-      // Ordinare le città in base al punteggio dell'indice della qualità della vita
-      cities.sort((a, b) => {
-        // Recuperare il punteggio dell'indice della qualità della vita per ogni città
-        const qualityOfLifeScoreA =
-          a.quality_of_life && a.score.quality_of_life
-            ? a.score.quality_of_life
-            : 0;
-        const qualityOfLifeScoreB =
-          b.quality_of_life && b.score.quality_of_life
-            ? b.score.quality_of_life
-            : 0;
-        // Confrontare i punteggi e ritornare 1, -1 o 0 a seconda del risultato del confronto
-        if (qualityOfLifeScoreA > qualityOfLifeScoreB) {
-          return -1;
-        } else if (qualityOfLifeScoreA < qualityOfLifeScoreB) {
-          return 1;
-        } else {
-          return 0;
-        }
-      });
-
-      // Prendere le prime 10 città
-      const topCities = cities.slice(0, 10);
-      // Creare il contenuto HTML
-      let html = "";
-      topCities.forEach((city) => {
-        html += `
-          <div class="city">
-            <h2>${city.name}</h2>
-            <p>Quality of Life Index: ${city.href}</p>
-          </div>
-        `;
-      });
-      // Inserire il contenuto HTML nel div
-      dataContainer.innerHTML = html;
+      // per ogni città presente in ua:item
+      for (let i = 0; i < cities.length; i++) {
+        axios
+          .get(cities[i].href)
+          .then((response) => {
+            const city = response.data._links["ua:scores"];
+            axios.get(city.href).then((response) => {
+              const punteggio = response.data.teleport_city_score;
+              console.log(punteggio);
+              cities[i].teleport_city_score = punteggio;
+              if (i === cities.length - 1) {
+                // tutte le chiamate sono state completate
+                cities.sort((a, b) => {
+                  return b.teleport_city_score - a.teleport_city_score;
+                });
+                // prendi le prime 10 città
+                const topCities = cities.slice(0, 10);
+                topCities.forEach((city) => {
+                  const cityDiv = document.createElement("div");
+                  cityDiv.innerHTML = `
+                 <h2>${city.name}</h2>
+                 <p>Teleport City Score: ${city.teleport_city_score}</p>
+               `;
+                  dataContainer.appendChild(cityDiv);
+                });
+              }
+            });
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
     })
-    .catch((error) => console.log(error));
+    .catch((error) => {
+      console.error(error);
+    });
 }
 
 window.addEventListener("load", displayTopCities);
