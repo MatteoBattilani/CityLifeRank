@@ -28,6 +28,7 @@ button.addEventListener("click", (event) => {
 });
 
 function displayTopCities() {
+  dataContainer.innerHTML = "Caricamento in corso...";
   axios
     .get("https://api.teleport.org/api/urban_areas/")
     .then((response) => {
@@ -51,10 +52,11 @@ function displayTopCities() {
         .then((citiesWithScores) => {
           citiesWithScores.sort((a, b) => b.score - a.score);
           const topCities = citiesWithScores.slice(0, 10);
+          dataContainer.removeChild(dataContainer.firstChild);
           topCities.forEach((city) => {
             const cityDiv = document.createElement("div");
             cityDiv.innerHTML = `
-                <h2>${city.name}</h2>
+                <h4>${city.name}</h4>
                 <p>Teleport City Score: ${city.score}</p>
               `;
             dataContainer.appendChild(cityDiv);
@@ -68,6 +70,7 @@ function displayTopCities() {
 }
 
 function displayWorstCities() {
+  data2Container.innerHTML = "Caricamento in corso...";
   axios
     .get("https://api.teleport.org/api/urban_areas/")
     .then((response) => {
@@ -91,10 +94,11 @@ function displayWorstCities() {
         .then((citiesWithScores) => {
           citiesWithScores.sort((a, b) => a.score - b.score);
           const worstCities = citiesWithScores.slice(0, 10);
+          data2Container.removeChild(data2Container.firstChild);
           worstCities.forEach((city) => {
             const cityDiv = document.createElement("div");
             cityDiv.innerHTML = `
-                <h2>${city.name}</h2>
+                <h4>${city.name}</h4>
                 <p>Teleport City Score: ${city.score}</p>
               `;
             data2Container.appendChild(cityDiv);

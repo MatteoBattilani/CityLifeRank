@@ -24,8 +24,21 @@
         <button id="search" type="submit" class="btn btn-primary rounded-pill">Search</button>
       </form>
     </div>
-    <div id="data-container"></div>
-    <div id="data2-container"></div>
+    
+    <div class="container d-md-flex justify-content-md-around mt-5">
+      <div class="col-6 text-center">
+        <h2 class="mb-4">Best Cities</h2>
+        <div id="data-container"></div>
+      </div>
+      <div class="col-6 text-center mt-5 mt-md-0"> <!--Il margine è 5, ma da md in sù è 0-->
+        <h2 class="mb-4">Worst Cities</h2>
+        <div id="data2-container"></div>
+      </div>
+    </div>
+    
+    
+    
+
     <script src="./JS/script.js"></script>
   </body>
 </html>
@@ -34,6 +47,6 @@
 
   1) Fare classifica 10 migliori città, 10 peggiori città. Questa è sempre presente.
      Quando invece si ricerca una città, la classifica svanisce e lascia il posto a dati specifici della ricerca.
-  2) Mostrare il contenuto della pagina solamente quando i risultati delle API hanno finito di caricarsi.
+  2) Arrotondare Teleport city score alla seconda cifra decimale
 
 -->
