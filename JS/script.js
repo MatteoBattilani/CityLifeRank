@@ -1,8 +1,17 @@
+// ----------------------------CONSTANTS AND VARIABLES-----------------------------------------------
+
 const button = document.querySelector("#search");
 const inputField = document.querySelector("#inputField");
 const dataContainer = document.querySelector("#data-container");
 const data2Container = document.querySelector("#data2-container");
 
+// -----------------------------------LISTENERS---------------------------------------------------
+
+// Following listeners call the displayTopCities and displayWorstCities functions when the page is refreshed
+window.addEventListener("load", displayTopCities);
+window.addEventListener("load", displayWorstCities);
+
+// This listener retrieves the result of the city searched via the search button
 button.addEventListener("click", (event) => {
   // Prevenire l'invio del form
   event.preventDefault();
@@ -27,48 +36,51 @@ button.addEventListener("click", (event) => {
     });
 });
 
+// ----------------------------------------------FUNCTIONS-------------------------------------------------
+
+// This function retrieves the 10 best cities according to the teleport_city_score via the teleport api
 function displayTopCities() {
   dataContainer.innerHTML = "Caricamento in corso...";
   axios
     .get("https://api.teleport.org/api/urban_areas/")
     .then((response) => {
       const cities = response.data._links["ua:item"];
-
-      const promises = cities.map((city) => axios.get(city.href));
-      Promise.all(promises)
-        .then((responses) => {
-          const citiesWithScores = responses.map((response, i) => {
-            const cityScores = response.data._links["ua:scores"];
-            return axios.get(cityScores.href).then((res) => {
+      const promises = cities.map((city) => {
+        return axios.get(city.href).then((res) => {
+          const cityScores = res.data._links["ua:scores"].href;
+          const cityCountry = res.data._links["ua:countries"][0].href;
+          return axios.get(cityScores).then((scores) => {
+            return axios.get(cityCountry).then((country) => {
+              const countryCode = country.data.iso_alpha2;
               return {
-                name: cities[i].name,
-                score: res.data.teleport_city_score,
+                name: city.name,
+                score: scores.data.teleport_city_score,
+                countryCode: countryCode,
               };
             });
           });
-
-          return Promise.all(citiesWithScores);
-        })
-        .then((citiesWithScores) => {
-          citiesWithScores.sort((a, b) => b.score - a.score);
-          const topCities = citiesWithScores.slice(0, 10);
-          dataContainer.removeChild(dataContainer.firstChild);
-          topCities.forEach((city) => {
-            const cityDiv = document.createElement("div");
-            cityDiv.innerHTML = `
+        });
+      });
+      return Promise.all(promises);
+    })
+    .then((citiesWithScores) => {
+      citiesWithScores.sort((a, b) => b.score - a.score);
+      const topCities = citiesWithScores.slice(0, 10);
+      dataContainer.removeChild(dataContainer.firstChild);
+      topCities.forEach((city) => {
+        const cityDiv = document.createElement("div");
+        cityDiv.innerHTML = `
                 <h4>${city.name}</h4>
                 <p>Teleport City Score: ${city.score}</p>
+                <p>Country Code: ${city.countryCode}</p>
               `;
-            dataContainer.appendChild(cityDiv);
-          });
-        })
-        .catch((error) => console.error(error));
+        dataContainer.appendChild(cityDiv);
+      });
     })
-    .catch((error) => {
-      console.error(error);
-    });
+    .catch((error) => console.error(error));
 }
 
+// This function retrieves the 10 worst cities according to the teleport_city_score via the teleport api
 function displayWorstCities() {
   data2Container.innerHTML = "Caricamento in corso...";
   axios
@@ -110,6 +122,3 @@ function displayWorstCities() {
       console.error(error);
     });
 }
-
-window.addEventListener("load", displayTopCities);
-window.addEventListener("load", displayWorstCities);
