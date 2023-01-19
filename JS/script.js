@@ -68,13 +68,16 @@ function displayTopCities() {
       const topCities = citiesWithScores.slice(0, 10);
       dataContainer.removeChild(dataContainer.firstChild);
       topCities.forEach((city) => {
-        const cityDiv = document.createElement("div");
-        cityDiv.innerHTML = `
-                <h4>${city.name}</h4>
-                <p>Teleport City Score: ${city.score}</p>
-                <p>Country Code: ${city.countryCode}</p>
-              `;
-        dataContainer.appendChild(cityDiv);
+        const countryFlag = `https://restcountries.com/v2/alpha/${city.countryCode}`;
+        axios.get(countryFlag).then((response) => {
+          const flag = response.data.flag;
+          const cityDiv = document.createElement("div");
+          cityDiv.innerHTML = `<img src="${flag}" alt="${city.name}" style="width: 20px">
+          <h4>${city.name}</h4>
+          <p>Teleport City Score: ${city.score}</p>
+          `;
+          dataContainer.appendChild(cityDiv);
+        });
       });
     })
     .catch((error) => console.error(error));
