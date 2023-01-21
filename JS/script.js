@@ -76,10 +76,17 @@ async function displayTopCities() {
       const flagResponse = await axios.get(countryFlag);
       const flag = flagResponse.data.flag;
       const cityDiv = document.createElement("div");
-      cityDiv.innerHTML = `<img src="${flag}" alt="${city.name}" style="width: 20px">
-      <h4>${city.name}</h4>
-      <p>Teleport City Score: ${city.score}</p>
+      cityDiv.innerHTML = `
+        <span style="display: inline-block">
+          <h4 style="display: inline-block; margin-right: 6px;">${i + 1}.</h4>
+          <h4 style="display: inline-block"> ${city.name}</h4>
+          <img src="${flag}" alt="${
+        city.name
+      }" style="width: 20px;display: inline-block; margin-bottom: 6px; margin-left: 6px;">
+        </span>
+        <p>Teleport City Score: ${city.score.toFixed(2)}</p>
       `;
+
       dataContainer.appendChild(cityDiv);
     }
   } catch (error) {
