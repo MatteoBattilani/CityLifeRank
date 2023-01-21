@@ -39,48 +39,52 @@ button.addEventListener("click", (event) => {
 // ----------------------------------------------FUNCTIONS-------------------------------------------------
 
 // This function retrieves the 10 best cities according to the teleport_city_score via the teleport api
-function displayTopCities() {
-  dataContainer.innerHTML = "Caricamento in corso...";
-  axios
-    .get("https://api.teleport.org/api/urban_areas/")
-    .then((response) => {
-      const cities = response.data._links["ua:item"];
-      const promises = cities.map((city) => {
-        return axios.get(city.href).then((res) => {
-          const cityScores = res.data._links["ua:scores"].href;
-          const cityCountry = res.data._links["ua:countries"][0].href;
-          return axios.get(cityScores).then((scores) => {
-            return axios.get(cityCountry).then((country) => {
-              const countryCode = country.data.iso_alpha2;
-              return {
-                name: city.name,
-                score: scores.data.teleport_city_score,
-                countryCode: countryCode,
-              };
-            });
-          });
-        });
-      });
-      return Promise.all(promises);
-    })
-    .then((citiesWithScores) => {
-      citiesWithScores.sort((a, b) => b.score - a.score);
-      const topCities = citiesWithScores.slice(0, 10);
-      dataContainer.removeChild(dataContainer.firstChild);
-      topCities.forEach((city) => {
-        const countryFlag = `https://restcountries.com/v2/alpha/${city.countryCode}`;
-        axios.get(countryFlag).then((response) => {
-          const flag = response.data.flag;
-          const cityDiv = document.createElement("div");
-          cityDiv.innerHTML = `<img src="${flag}" alt="${city.name}" style="width: 20px">
-          <h4>${city.name}</h4>
-          <p>Teleport City Score: ${city.score}</p>
-          `;
-          dataContainer.appendChild(cityDiv);
-        });
-      });
-    })
-    .catch((error) => console.error(error));
+async function displayTopCities() {
+  dataContainer.innerHTML = "Loading...";
+  try {
+    const timestamp = new Date().getTime();
+    const urbanAreasResponse = await axios.get(
+      `https://api.teleport.org/api/urban_areas/?t=${timestamp}`
+    );
+    const cities = urbanAreasResponse.data._links["ua:item"];
+    const citiesPromises = cities.map(async (city) => {
+      const cityResponse = await axios.get(city.href);
+      const cityScores = await axios.get(
+        cityResponse.data._links["ua:scores"].href
+      );
+      const cityCountry = await axios.get(
+        cityResponse.data._links["ua:countries"][0].href
+      );
+      return {
+        name: city.name,
+        score: cityScores.data.teleport_city_score,
+        countryCode: cityCountry.data.iso_alpha2,
+      };
+    });
+    const citiesWithScores = await Promise.allSettled(citiesPromises);
+    console.log("cities with scores: ", citiesWithScores);
+    const topCities = citiesWithScores
+      .filter((city) => city.status === "fulfilled")
+      .map((city) => city.value)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 10);
+    console.log("top cities: ", topCities);
+    dataContainer.innerHTML = "";
+    for (let i = 0; i < topCities.length; i++) {
+      const city = topCities[i];
+      const countryFlag = `https://restcountries.com/v2/alpha/${city.countryCode}`;
+      const flagResponse = await axios.get(countryFlag);
+      const flag = flagResponse.data.flag;
+      const cityDiv = document.createElement("div");
+      cityDiv.innerHTML = `<img src="${flag}" alt="${city.name}" style="width: 20px">
+      <h4>${city.name}</h4>
+      <p>Teleport City Score: ${city.score}</p>
+      `;
+      dataContainer.appendChild(cityDiv);
+    }
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 // This function retrieves the 10 worst cities according to the teleport_city_score via the teleport api
