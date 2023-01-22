@@ -4,6 +4,7 @@ const button = document.querySelector("#search");
 const inputField = document.querySelector("#inputField");
 const dataContainer = document.querySelector("#data-container");
 const data2Container = document.querySelector("#data2-container");
+const data3Container = document.querySelector("#data3-container");
 
 // -----------------------------------LISTENERS---------------------------------------------------
 
@@ -15,21 +16,44 @@ window.addEventListener("load", displayWorstCities);
 button.addEventListener("click", (event) => {
   // Prevenire l'invio del form
   event.preventDefault();
-  const city = inputField.value;
+  const city = inputField.value.toLowerCase(); // the city must always be in lower case for the function to work.
   axios
-    .get(`https://api.teleport.org/api/urban_areas/slug:${city}/scores/`)
+    .get(`https://api.teleport.org/api/cities/?search=${city}`)
     .then((response) => {
       // Estrarre i dati che desideri visualizzare
       const data = response.data;
       // Creare il contenuto HTML che desideri inserire nel div
-      const html = `
-        <p>City: ${data.name}</p>
-        <p>Quality of Life Index: ${data.categories[0].score_out_of_10}</p>
-        <p>Healthcare Index: ${data.categories[1].score_out_of_10}</p>
-        <p>Cost of Living Index: ${data.categories[2].score_out_of_10}</p>
-      `;
-      // Inserire il contenuto HTML nel div
-      dataContainer.innerHTML = html;
+      console.log(data);
+      let linksCount = 0;
+      const searchResults = response.data._embedded["city:search-results"];
+
+      for (let i = 0; i < searchResults.length; i++) {
+        for (let key in searchResults[i]._links) {
+          linksCount++;
+        }
+      }
+      // Se ci sono città omonime mostro all'utente una lista di tali città in modo che scelga quella corretta
+      if (linksCount > 1) {
+        let html = "<ol class='list'>";
+        for (let i = 0; i < searchResults.length; i++) {
+          html += `<li class='list-item' data-href='${searchResults[i]._links["city:item"].href}'>${searchResults[i].matching_full_name}</li>`;
+        }
+        html += "</ol>";
+
+        data3Container.innerHTML = html;
+        data3Container.addEventListener("click", (event) => {
+          if (event.target.tagName === "LI") {
+            axios
+              .get(event.target.getAttribute("data-href"))
+              .then((response) => {
+                console.log(response);
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+          }
+        });
+      }
     })
     .catch((error) => {
       console.error(error);

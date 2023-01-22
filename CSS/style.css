@@ -9,7 +9,14 @@ body{
 }
 
 
-
+/*--Style for listener which retrieves the result of the city searched via the search button--*/
+.list{
+  display: block;
+}
+.list-item:hover{
+  cursor: pointer;
+  text-decoration: underline;
+}
 
 
 
