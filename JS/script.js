@@ -60,6 +60,16 @@ button.addEventListener("click", (event) => {
                       .then((response) => {
                         const scoresData = response.data;
                         // Fai qualcosa con i dati delle valutazioni
+                        let categories = response.data.categories;
+                        for (let i = 0; i < categories.length; i++) {
+                          let html = "<div>";
+                          for (let i = 0; i < categories.length; i++) {
+                            html += `<p>${categories[i].name}</p>`;
+                          }
+                          html += "</div>";
+
+                          data3Container.innerHTML = html;
+                        }
                         console.log(scoresData);
                       })
                       .catch((error) => {
