@@ -46,13 +46,40 @@ button.addEventListener("click", (event) => {
             axios
               .get(event.target.getAttribute("data-href"))
               .then((response) => {
-                console.log(response);
+                // NUOVA CHIAMATA API
+                const urbanAreaUrl =
+                  response.data._links["city:urban_area"].href;
+                axios
+                  .get(urbanAreaUrl)
+                  .then((response) => {
+                    const data = response.data;
+                    console.log(data);
+                    const scoresUrl = response.data._links["ua:scores"].href;
+                    axios
+                      .get(scoresUrl)
+                      .then((response) => {
+                        const scoresData = response.data;
+                        // Fai qualcosa con i dati delle valutazioni
+                        console.log(scoresData);
+                      })
+                      .catch((error) => {
+                        console.error(error);
+                      });
+
+                    // Fai qualcosa con i dati dell'area urbana
+                  })
+                  .catch((error) => {
+                    console.error(error);
+                  });
               })
               .catch((error) => {
                 console.error(error);
               });
           }
         });
+      } else {
+        // SE NON CI SONO CITTà OMONIME ALLORA DEVO MOSTRARE SEMPLICEMENTE I DATI
+        // IMPLEMENTARE QUI
       }
     })
     .catch((error) => {
