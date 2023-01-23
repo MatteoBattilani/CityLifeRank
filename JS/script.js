@@ -2,9 +2,9 @@
 
 const button = document.querySelector("#search");
 const inputField = document.querySelector("#inputField");
-const dataContainer = document.querySelector("#data-container");
-const data2Container = document.querySelector("#data2-container");
-const data3Container = document.querySelector("#data3-container");
+const bestContainer = document.querySelector("#best-container");
+const worstContainer = document.querySelector("#worst-container");
+const scoringContainer = document.querySelector("#scoring-container");
 const cityDescriptionContainer = document.querySelector("#city-description");
 // -----------------------------------LISTENERS---------------------------------------------------
 
@@ -41,8 +41,8 @@ button.addEventListener("click", (event) => {
         }
         html += "</ol>";
 
-        data3Container.innerHTML = html;
-        data3Container.addEventListener("click", (event) => {
+        scoringContainer.innerHTML = html;
+        scoringContainer.addEventListener("click", (event) => {
           if (event.target.tagName === "LI") {
             axios
               .get(event.target.getAttribute("data-href"))
@@ -63,8 +63,12 @@ button.addEventListener("click", (event) => {
                         // Fai qualcosa con i dati delle valutazioni
                         let categories = response.data.categories;
                         let summary = response.data.summary;
+                        let cityScore = response.data.teleport_city_score;
                         for (let i = 0; i < categories.length; i++) {
-                          let htmlDescription = `<p>${summary}</p>`;
+                          let htmlDescription = `<p>${summary}</p> 
+                          <p style='text-align: center;'><b>City Scoring: ${cityScore.toFixed(
+                            2
+                          )}<b></p>`;
                           let html = "<div class='categories'>";
                           for (let i = 0; i < categories.length; i++) {
                             let score = categories[i].score_out_of_10;
@@ -81,7 +85,7 @@ button.addEventListener("click", (event) => {
                           }
                           html += "</div>";
                           cityDescriptionContainer.innerHTML = htmlDescription;
-                          data3Container.innerHTML = html;
+                          scoringContainer.innerHTML = html;
                         }
                         console.log(scoresData);
                       })
@@ -114,7 +118,7 @@ button.addEventListener("click", (event) => {
 
 // This function retrieves the 10 best cities according to the teleport_city_score via the teleport api
 async function displayTopCities() {
-  dataContainer.innerHTML = "Loading...";
+  bestContainer.innerHTML = "Loading...";
   try {
     const timestamp = new Date().getTime();
     const urbanAreasResponse = await axios.get(
@@ -143,7 +147,7 @@ async function displayTopCities() {
       .sort((a, b) => b.score - a.score)
       .slice(0, 10);
     console.log("top cities: ", topCities);
-    dataContainer.innerHTML = "";
+    bestContainer.innerHTML = "";
     for (let i = 0; i < topCities.length; i++) {
       const city = topCities[i];
       const countryFlag = `https://restcountries.com/v2/alpha/${city.countryCode}`;
@@ -161,7 +165,7 @@ async function displayTopCities() {
         <p>Teleport City Score: ${city.score.toFixed(2)}</p>
       `;
 
-      dataContainer.appendChild(cityDiv);
+      bestContainer.appendChild(cityDiv);
     }
   } catch (error) {
     console.error(error);
@@ -170,7 +174,7 @@ async function displayTopCities() {
 
 // This function retrieves the 10 worst cities according to the teleport_city_score via the teleport api
 async function displayWorstCities() {
-  data2Container.innerHTML = "Loading...";
+  worstContainer.innerHTML = "Loading...";
   try {
     const timestamp = new Date().getTime();
     const urbanAreasResponse = await axios.get(
@@ -200,7 +204,7 @@ async function displayWorstCities() {
       .sort((a, b) => a.score - b.score)
       .slice(0, 10);
     console.log("top cities by lowest score: ", topCities);
-    data2Container.innerHTML = "";
+    worstContainer.innerHTML = "";
     for (let i = 0; i < topCities.length; i++) {
       const city = topCities[i];
       const countryFlag = `https://restcountries.com/v2/alpha/${city.countryCode}`;
@@ -217,7 +221,7 @@ async function displayWorstCities() {
         </span>
         <p>Teleport City Score: ${city.score.toFixed(2)}</p>
       `;
-      data2Container.appendChild(cityDiv);
+      worstContainer.appendChild(cityDiv);
     }
   } catch (error) {
     console.error(error);
