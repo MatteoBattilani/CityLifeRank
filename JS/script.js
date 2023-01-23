@@ -41,12 +41,20 @@ button.addEventListener("click", (event) => {
       // Se ci sono città omonime mostro all'utente una lista di tali città in modo che scelga quella corretta
       if (linksCount > 1) {
         let html = "<ol class='list'>";
+        const promises = [];
         for (let i = 0; i < searchResults.length; i++) {
-          html += `<li class='list-item' data-href='${searchResults[i]._links["city:item"].href}'>${searchResults[i].matching_full_name}</li>`;
+          promises.push(axios.get(searchResults[i]._links["city:item"].href));
         }
-        html += "</ol>";
+        Promise.all(promises).then((responses) => {
+          for (let i = 0; i < responses.length; i++) {
+            if (responses[i].data._links.hasOwnProperty("city:urban_area")) {
+              html += `<li class='list-item' data-href='${searchResults[i]._links["city:item"].href}'>${searchResults[i].matching_full_name}</li>`;
+            }
+          }
+          html += "</ol>";
+          scoringContainer.innerHTML = html;
+        });
 
-        scoringContainer.innerHTML = html;
         scoringContainer.addEventListener("click", (event) => {
           if (event.target.tagName === "LI") {
             axios
