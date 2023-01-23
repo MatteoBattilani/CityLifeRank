@@ -16,7 +16,12 @@ window.addEventListener("load", displayWorstCities);
 button.addEventListener("click", (event) => {
   // Prevenire l'invio del form
   event.preventDefault();
+  scoringContainer.innerHTML = "";
   cityDescriptionContainer.innerHTML = ""; // svuoto il div che contiene l'eventuale descrizione di un'altra città
+  cityDescriptionContainer.classList.remove(
+    "border-container",
+    "windows-background"
+  ); // elimino il border della descrizione della città (se dovesse esserci)
   const city = inputField.value.toLowerCase(); // the city must always be in lower case for the function to work.
   axios
     .get(`https://api.teleport.org/api/cities/?search=${city}`)
@@ -84,6 +89,10 @@ button.addEventListener("click", (event) => {
                             }
                           }
                           html += "</div>";
+                          cityDescriptionContainer.classList.add(
+                            "border-container",
+                            "windows-background"
+                          );
                           cityDescriptionContainer.innerHTML = htmlDescription;
                           scoringContainer.innerHTML = html;
                         }
