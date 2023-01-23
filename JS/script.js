@@ -52,6 +52,10 @@ button.addEventListener("click", (event) => {
             }
           }
           html += "</ol>";
+          if (html === "<ol class='list'></ol>") {
+            html =
+              '<div class="alert alert-warning" role="alert">City not found in database</div>';
+          }
           scoringContainer.innerHTML = html;
         });
 
