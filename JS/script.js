@@ -68,16 +68,13 @@ button.addEventListener("click", (event) => {
                           let html = "<div class='categories'>";
                           for (let i = 0; i < categories.length; i++) {
                             let score = categories[i].score_out_of_10;
+                            html += `<div><span class='dot' style='background-color: ${categories[i].color};'></span>
+                              <span>${categories[i].name}</span>`;
                             if (Number.isInteger(score)) {
-                              html += `<div><span class='dot' style='background-color: ${categories[i].color};'></span>
-                              <span>${categories[i].name}</span>
-                              <p>${score}/10</p>
+                              html += `<p>${score}/10</p>
                               </div>`;
                             } else {
-                              html += `<div><span class='dot' style='background-color: ${
-                                categories[i].color
-                              };'></span>
-                              <span>${categories[i].name}</span>
+                              html += `
                               <p>${score.toFixed(1)}/10</p>
                               </div>`;
                             }
