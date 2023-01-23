@@ -18,9 +18,37 @@ body{
   text-decoration: underline;
 }
 
+.categories {
+  display: flex;
+  flex-wrap: wrap;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/*--Quando si visualizza da mobile, le categorie delle città vengono mostrate su una sola colonna--*/
+.categories div {
+  width: 25%;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .categories div {
+    width: 100%;
+    text-align: center;
+  }
+}
+/*---------------------------------------*/
+
+div{
+  border: 1px solid black;
+}
 
 
-
-
-
-
+/*--Stile dei puntini colorati che accompagnano il nome delle categorie--*/
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid black;
+  display: inline-block;
+  margin-right: 10px;
+}

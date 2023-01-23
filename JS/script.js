@@ -5,7 +5,7 @@ const inputField = document.querySelector("#inputField");
 const dataContainer = document.querySelector("#data-container");
 const data2Container = document.querySelector("#data2-container");
 const data3Container = document.querySelector("#data3-container");
-
+const cityDescriptionContainer = document.querySelector("#city-description");
 // -----------------------------------LISTENERS---------------------------------------------------
 
 // Following listeners call the displayTopCities and displayWorstCities functions when the page is refreshed
@@ -16,6 +16,7 @@ window.addEventListener("load", displayWorstCities);
 button.addEventListener("click", (event) => {
   // Prevenire l'invio del form
   event.preventDefault();
+  cityDescriptionContainer.innerHTML = ""; // svuoto il div che contiene l'eventuale descrizione di un'altra città
   const city = inputField.value.toLowerCase(); // the city must always be in lower case for the function to work.
   axios
     .get(`https://api.teleport.org/api/cities/?search=${city}`)
@@ -61,13 +62,28 @@ button.addEventListener("click", (event) => {
                         const scoresData = response.data;
                         // Fai qualcosa con i dati delle valutazioni
                         let categories = response.data.categories;
+                        let summary = response.data.summary;
                         for (let i = 0; i < categories.length; i++) {
-                          let html = "<div>";
+                          let htmlDescription = `<p>${summary}</p>`;
+                          let html = "<div class='categories'>";
                           for (let i = 0; i < categories.length; i++) {
-                            html += `<p>${categories[i].name}</p>`;
+                            let score = categories[i].score_out_of_10;
+                            if (Number.isInteger(score)) {
+                              html += `<div><span class='dot' style='background-color: ${categories[i].color};'></span>
+                              <span>${categories[i].name}</span>
+                              <p>${score}/10</p>
+                              </div>`;
+                            } else {
+                              html += `<div><span class='dot' style='background-color: ${
+                                categories[i].color
+                              };'></span>
+                              <span>${categories[i].name}</span>
+                              <p>${score.toFixed(1)}/10</p>
+                              </div>`;
+                            }
                           }
                           html += "</div>";
-
+                          cityDescriptionContainer.innerHTML = htmlDescription;
                           data3Container.innerHTML = html;
                         }
                         console.log(scoresData);
