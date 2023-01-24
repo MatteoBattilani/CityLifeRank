@@ -103,7 +103,8 @@ button.addEventListener("click", (event) => {
                           html += "</div>";
                           cityDescriptionContainer.classList.add(
                             "border-container",
-                            "windows-background"
+                            "windows-background",
+                            "paragraph"
                           );
                           cityDescriptionContainer.innerHTML = htmlDescription;
                           scoringContainer.innerHTML = html;
@@ -113,8 +114,6 @@ button.addEventListener("click", (event) => {
                       .catch((error) => {
                         console.error(error);
                       });
-
-                    // Fai qualcosa con i dati dell'area urbana
                   })
                   .catch((error) => {
                     console.error(error);
@@ -127,7 +126,6 @@ button.addEventListener("click", (event) => {
         });
       } else {
         // SE NON CI SONO CITTà OMONIME ALLORA DEVO MOSTRARE SEMPLICEMENTE I DATI
-        // IMPLEMENTARE QUI
       }
     })
     .catch((error) => {

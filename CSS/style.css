@@ -1,7 +1,8 @@
 *, *::before, *::after {
   box-sizing: border-box;
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-family: 'Bitter', serif;
   font-weight: normal;
+  color: #0f1b61;
 }
 
 body{
@@ -43,6 +44,12 @@ div{
   border: 1px solid black;
 }
 */
+
+/*--Stile per testo--*/
+.paragraph{
+  font-size: 18px;
+  font-weight: 400;
+}
 
 /*--Stile dei puntini colorati che accompagnano il nome delle categorie--*/
 .dot {
