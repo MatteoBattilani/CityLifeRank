@@ -6,130 +6,102 @@ const bestContainer = document.querySelector("#best-container");
 const worstContainer = document.querySelector("#worst-container");
 const scoringContainer = document.querySelector("#scoring-container");
 const cityDescriptionContainer = document.querySelector("#city-description");
+
 // -----------------------------------LISTENERS---------------------------------------------------
 
 // Following listeners call the displayTopCities and displayWorstCities functions when the page is refreshed
 window.addEventListener("load", displayTopCities);
 window.addEventListener("load", displayWorstCities);
 
-// This listener retrieves the result of the city searched via the search button
-button.addEventListener("click", (event) => {
-  // Prevenire l'invio del form
+// THIS LISTENER RETRIEVCES THE RESULT OF THE CITY SEARCHED VIA THE SEARCH BUTTON
+button.addEventListener("click", async (event) => {
   event.preventDefault();
   scoringContainer.innerHTML = "";
-  cityDescriptionContainer.innerHTML = ""; // svuoto il div che contiene l'eventuale descrizione di un'altra città
+  cityDescriptionContainer.innerHTML = "";
   cityDescriptionContainer.classList.remove(
     "border-container",
     "windows-background"
-  ); // elimino il border della descrizione della città (se dovesse esserci)
-  const city = inputField.value.toLowerCase(); // the city must always be in lower case for the function to work.
-  axios
-    .get(`https://api.teleport.org/api/cities/?search=${city}`)
-    .then((response) => {
-      // Estrarre i dati che desideri visualizzare
-      const data = response.data;
-      // Creare il contenuto HTML che desideri inserire nel div
-      console.log(data);
-      let linksCount = 0;
-      const searchResults = response.data._embedded["city:search-results"];
-
-      for (let i = 0; i < searchResults.length; i++) {
-        for (let key in searchResults[i]._links) {
-          linksCount++;
-        }
+  );
+  const city = inputField.value.toLowerCase();
+  try {
+    const response = await axios.get(
+      `https://api.teleport.org/api/cities/?search=${city}`
+    );
+    const searchResults = response.data._embedded["city:search-results"];
+    let html = "<ol class='list'>";
+    const promises = [];
+    for (let i = 0; i < searchResults.length; i++) {
+      promises.push(axios.get(searchResults[i]._links["city:item"].href));
+    }
+    const responses = await Promise.all(promises);
+    for (let i = 0; i < responses.length; i++) {
+      if (responses[i].data._links.hasOwnProperty("city:urban_area")) {
+        html += `<li class='list-item' data-href='${searchResults[i]._links["city:item"].href}'>${searchResults[i].matching_full_name}</li>`;
       }
-      // Se ci sono città omonime mostro all'utente una lista di tali città in modo che scelga quella corretta
+    }
+    html += "</ol>";
+    if (html === "<ol class='list'></ol>") {
+      html =
+        '<div class="alert alert-warning" role="alert">City not found in database</div>';
+    }
+    scoringContainer.innerHTML = html;
+  } catch (error) {
+    console.error(error);
+  }
+});
 
-      let html = "<ol class='list'>";
-      const promises = [];
-      for (let i = 0; i < searchResults.length; i++) {
-        promises.push(axios.get(searchResults[i]._links["city:item"].href));
-      }
-      Promise.all(promises).then((responses) => {
-        for (let i = 0; i < responses.length; i++) {
-          if (responses[i].data._links.hasOwnProperty("city:urban_area")) {
-            html += `<li class='list-item' data-href='${searchResults[i]._links["city:item"].href}'>${searchResults[i].matching_full_name}</li>`;
-          }
-        }
-        html += "</ol>";
-        if (html === "<ol class='list'></ol>") {
-          html =
-            '<div class="alert alert-warning" role="alert">City not found in database</div>';
-        }
-        scoringContainer.innerHTML = html;
-      });
+// THIS LISTENER IS ACTIVATED WHEN CLICKING ON AN ELEMENT WITH THE TAG 'LI' WITHIN THE 'scoringContainer'.
+scoringContainer.addEventListener("click", async (event) => {
+  if (event.target.tagName === "LI") {
+    try {
+      const cityData = await axios.get(event.target.getAttribute("data-href"));
+      const urbanAreaUrl = cityData.data._links["city:urban_area"].href;
+      const urbanAreaData = await axios.get(urbanAreaUrl);
+      const scoresUrl = urbanAreaData.data._links["ua:scores"].href;
+      const scoresData = await axios.get(scoresUrl);
 
-      scoringContainer.addEventListener("click", (event) => {
-        if (event.target.tagName === "LI") {
-          axios
-            .get(event.target.getAttribute("data-href"))
-            .then((response) => {
-              // NUOVA CHIAMATA API
-              const urbanAreaUrl = response.data._links["city:urban_area"].href;
-              axios
-                .get(urbanAreaUrl)
-                .then((response) => {
-                  const data = response.data;
-                  console.log(data);
-                  const scoresUrl = response.data._links["ua:scores"].href;
-                  axios
-                    .get(scoresUrl)
-                    .then((response) => {
-                      const scoresData = response.data;
-                      // Fai qualcosa con i dati delle valutazioni
-                      let categories = response.data.categories;
-                      let summary = response.data.summary;
-                      let cityScore = response.data.teleport_city_score;
-                      for (let i = 0; i < categories.length; i++) {
-                        let htmlDescription = `<p>${summary}</p> 
-                          <p style='text-align: center;'><b>City Scoring: ${cityScore.toFixed(
-                            2
-                          )}<b></p>`;
-                        let html = "<div class='categories'>";
-                        for (let i = 0; i < categories.length; i++) {
-                          let score = categories[i].score_out_of_10;
-                          html += `<div><span class='dot' style='background-color: ${categories[i].color};'></span>
-                              <span>${categories[i].name}</span>`;
-                          if (Number.isInteger(score)) {
-                            html += `<p>${score}/10</p>
-                              </div>`;
-                          } else {
-                            html += `
-                              <p>${score.toFixed(1)}/10</p>
-                              </div>`;
-                          }
-                        }
-                        html += "</div>";
-                        cityDescriptionContainer.classList.add(
-                          "border-container",
-                          "windows-background",
-                          "paragraph"
-                        );
-                        cityDescriptionContainer.innerHTML = htmlDescription;
-                        scoringContainer.innerHTML = html;
-                      }
-                      console.log(scoresData);
-                    })
-                    .catch((error) => {
-                      console.error(error);
-                    });
-                })
-                .catch((error) => {
-                  console.error(error);
-                });
-            })
-            .catch((error) => {
-              console.error(error);
-            });
-        }
-      });
-    })
-    .catch((error) => {
+      let categories = scoresData.data.categories;
+      let summary = scoresData.data.summary;
+      let cityScore = scoresData.data.teleport_city_score;
+
+      let htmlDescription = `<p>${summary}</p> 
+                <p style='text-align: center;'><b>City Scoring: ${cityScore.toFixed(
+                  2
+                )}<b></p>`;
+
+      scoringContainer.innerHTML = createHTMLCategories(categories);
+
+      cityDescriptionContainer.classList.add(
+        "border-container",
+        "windows-background",
+        "paragraph"
+      );
+      cityDescriptionContainer.innerHTML = htmlDescription;
+      scoringContainer.innerHTML = html;
+    } catch (error) {
       console.error(error);
-    });
+    }
+  }
 });
 
 // ----------------------------------------------FUNCTIONS-------------------------------------------------
+
+// FUNCTION FOR CREATING THE HTML FOR CITY'S CATEGORIES
+const createHTMLCategories = (categories) => {
+  let html = "<div class='categories'>";
+  for (let category of categories) {
+    let score = category.score_out_of_10;
+    html += `<div>
+              <span class='dot' style='background-color: ${
+                category.color
+              };'></span>
+              <span>${category.name}</span>
+              <p>${score.toFixed(1)}/10</p>
+            </div>`;
+  }
+  html += "</div>";
+  return html;
+};
 
 // This function retrieves the 10 best cities according to the teleport_city_score via the teleport api
 async function displayTopCities() {
