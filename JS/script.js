@@ -6,6 +6,7 @@ const bestContainer = document.querySelector("#best-container");
 const worstContainer = document.querySelector("#worst-container");
 const scoringContainer = document.querySelector("#scoring-container");
 const cityDescriptionContainer = document.querySelector("#city-description");
+const backContainer = document.querySelector("#back");
 
 // -----------------------------------LISTENERS---------------------------------------------------
 
@@ -13,9 +14,10 @@ const cityDescriptionContainer = document.querySelector("#city-description");
 window.addEventListener("load", displayTopCities);
 window.addEventListener("load", displayWorstCities);
 
-// THIS LISTENER RETRIEVCES THE RESULT OF THE CITY SEARCHED VIA THE SEARCH BUTTON
+// THIS LISTENER RETRIEVES THE RESULT OF THE CITY SEARCHED VIA THE SEARCH BUTTON
 button.addEventListener("click", async (event) => {
   event.preventDefault();
+  backContainer.classList.add("invisible"); //è importante renderlo invisibile perchè se ho già fatto una ricerca allora è visibile
   scoringContainer.innerHTML = "";
   cityDescriptionContainer.innerHTML = "";
   cityDescriptionContainer.classList.remove(
@@ -45,6 +47,7 @@ button.addEventListener("click", async (event) => {
         '<div class="alert alert-warning" role="alert">City not found in database</div>';
     }
     scoringContainer.innerHTML = html;
+    backContainer.classList.remove("invisible");
   } catch (error) {
     console.error(error);
   }
@@ -84,6 +87,11 @@ scoringContainer.addEventListener("click", async (event) => {
   }
 });
 
+// THIS LISTENER IS ACTIVATED WHEN CLICKING ON THE DIV COINTAINING "TO THE HOME"
+backContainer.addEventListener("click", function () {
+  location.reload();
+});
+
 // ----------------------------------------------FUNCTIONS-------------------------------------------------
 
 // FUNCTION FOR CREATING THE HTML FOR CITY'S CATEGORIES
@@ -91,13 +99,18 @@ const createHTMLCategories = (categories) => {
   let html = "<div class='categories'>";
   for (let category of categories) {
     let score = category.score_out_of_10;
+    let firstDecimal = +score.toFixed(1).slice(-1);
     html += `<div>
-              <span class='dot' style='background-color: ${
-                category.color
-              };'></span>
-              <span>${category.name}</span>
-              <p>${score.toFixed(1)}/10</p>
-            </div>`;
+              <span class='dot' style='background-color: ${category.color};'></span>
+              <span>${category.name}</span>`;
+
+    if (firstDecimal == 0) {
+      html += `<p>${score.toFixed(0)}/10</p>`;
+    } else {
+      html += `<p>${score.toFixed(1)}/10</p>`;
+    }
+
+    html += "</div>";
   }
   html += "</div>";
   return html;
