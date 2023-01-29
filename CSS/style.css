@@ -26,13 +26,13 @@ body{
 }
 
 /*--Quando si visualizza da mobile, le categorie delle città vengono mostrate su una sola colonna--*/
-.categories div {
+#categories-div {
   width: 25%;
   text-align: center;
 }
 
 @media (max-width: 768px) {
-  .categories div {
+  #categories-div {
     width: 100%;
     text-align: center;
   }
@@ -45,19 +45,23 @@ div{
 }
 */
 
-/*--Stile per testo--*/
+/*--Text style for city's description--*/
 .paragraph{
   font-size: 18px;
+  font-weight: 400;
+}
+
+.scoring-text{
+  font-size: 16px;
   font-weight: 400;
 }
 
 /*--Stile dei puntini colorati che accompagnano il nome delle categorie--*/
 .dot {
   width: 10px;
-  height: 10px;
-  border-radius: 50%;
+  height: 50px;
   border: 2px solid rgb(229, 236, 242);
-  display: inline-block;
+  display: block;
   margin-right: 10px;
 }
 

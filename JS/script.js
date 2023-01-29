@@ -61,26 +61,11 @@ scoringContainer.addEventListener("click", async (event) => {
       const urbanAreaUrl = cityData.data._links["city:urban_area"].href;
       const urbanAreaData = await axios.get(urbanAreaUrl);
       const scoresUrl = urbanAreaData.data._links["ua:scores"].href;
-      const scoresData = await axios.get(scoresUrl);
+      let scoresData = await axios.get(scoresUrl);
 
-      let categories = scoresData.data.categories;
-      let summary = scoresData.data.summary;
-      let cityScore = scoresData.data.teleport_city_score;
+      scoresData = scoresData.data;
 
-      let htmlDescription = `<p>${summary}</p> 
-                <p style='text-align: center;'><b>City Scoring: ${cityScore.toFixed(
-                  2
-                )}<b></p>`;
-
-      scoringContainer.innerHTML = createHTMLCategories(categories);
-
-      cityDescriptionContainer.classList.add(
-        "border-container",
-        "windows-background",
-        "paragraph"
-      );
-      cityDescriptionContainer.innerHTML = htmlDescription;
-      scoringContainer.innerHTML = html;
+      createCityScoreHTML(scoresData);
     } catch (error) {
       console.error(error);
     }
@@ -104,24 +89,7 @@ scoringContainer.addEventListener("click", async (event) => {
       );
 
       const scoresData = cityData.data;
-
-      let categories = scoresData.categories;
-      let summary = scoresData.summary;
-      let cityScore = scoresData.teleport_city_score;
-
-      let htmlDescription = `<p>${summary}</p> 
-                <p style='text-align: center;'><b>City Scoring: ${cityScore.toFixed(
-                  2
-                )}<b></p>`;
-
-      scoringContainer.innerHTML = createHTMLCategories(categories);
-
-      cityDescriptionContainer.classList.add(
-        "border-container",
-        "windows-background",
-        "paragraph"
-      );
-      cityDescriptionContainer.innerHTML = htmlDescription;
+      createCityScoreHTML(scoresData);
       backContainer.classList.remove("invisible");
     } catch (error) {
       console.error(error);
@@ -131,23 +99,44 @@ scoringContainer.addEventListener("click", async (event) => {
 
 // ----------------------------------------------FUNCTIONS-------------------------------------------------
 
+// FUNCTION USED TO CREATE DESCRIPTION AND SCORE OF A CITY
+const createCityScoreHTML = (scoresData) => {
+  let categories = scoresData.categories;
+  let summary = scoresData.summary;
+  let cityScore = scoresData.teleport_city_score;
+
+  let htmlDescription = `<p>${summary}</p> 
+                <p style='text-align: center;'><b>City Scoring: ${cityScore.toFixed(
+                  2
+                )}<b></p>`;
+
+  scoringContainer.innerHTML = createHTMLCategories(categories);
+
+  cityDescriptionContainer.classList.add(
+    "border-container",
+    "windows-background",
+    "paragraph"
+  );
+  cityDescriptionContainer.innerHTML = htmlDescription;
+};
+
 // FUNCTION FOR CREATING THE HTML FOR CITY'S CATEGORIES
 const createHTMLCategories = (categories) => {
   let html = "<div class='categories'>";
   for (let category of categories) {
     let score = category.score_out_of_10;
     let firstDecimal = +score.toFixed(1).slice(-1);
-    html += `<div>
-              <span class='dot' style='background-color: ${category.color};'></span>
-              <span>${category.name}</span>`;
+    html += `<div id="categories-div" class="d-flex">
+              <div class='dot' style='background-color: ${category.color};'></div>
+              <div class="paragraph"><p class="mb-0 pb-0">${category.name}</p>`;
 
     if (firstDecimal == 0) {
-      html += `<p>${score.toFixed(0)}/10</p>`;
+      html += `<p class="scoring-text mt-0 pt-0">${score.toFixed(0)}/10</p>`;
     } else {
-      html += `<p>${score.toFixed(1)}/10</p>`;
+      html += `<p class="scoring-text mt-0 pt-0">${score.toFixed(1)}/10</p>`;
     }
 
-    html += "</div>";
+    html += "</div></div>";
   }
   html += "</div>";
   return html;
