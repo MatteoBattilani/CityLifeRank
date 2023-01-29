@@ -92,6 +92,43 @@ backContainer.addEventListener("click", function () {
   location.reload();
 });
 
+// THIS LISTENER IS ACTIVATED WHEN CLICKING ON THE NAME OF A CITY IN THE BEST AND WORST LISTS
+scoringContainer.addEventListener("click", async (event) => {
+  if (event.target.id === "city-name") {
+    try {
+      let cityName = event.target.textContent.toLowerCase();
+      cityName = cityName.replace(/\s/g, "-");
+      console.log(cityName);
+      const cityData = await axios.get(
+        `https://api.teleport.org/api/urban_areas/slug:${cityName}/scores/`
+      );
+
+      const scoresData = cityData.data;
+
+      let categories = scoresData.categories;
+      let summary = scoresData.summary;
+      let cityScore = scoresData.teleport_city_score;
+
+      let htmlDescription = `<p>${summary}</p> 
+                <p style='text-align: center;'><b>City Scoring: ${cityScore.toFixed(
+                  2
+                )}<b></p>`;
+
+      scoringContainer.innerHTML = createHTMLCategories(categories);
+
+      cityDescriptionContainer.classList.add(
+        "border-container",
+        "windows-background",
+        "paragraph"
+      );
+      cityDescriptionContainer.innerHTML = htmlDescription;
+      backContainer.classList.remove("invisible");
+    } catch (error) {
+      console.error(error);
+    }
+  }
+});
+
 // ----------------------------------------------FUNCTIONS-------------------------------------------------
 
 // FUNCTION FOR CREATING THE HTML FOR CITY'S CATEGORIES
@@ -157,7 +194,7 @@ async function displayTopCities() {
       cityDiv.innerHTML = `
         <span style="display: inline-block">
           <h4 style="display: inline-block; margin-right: 6px;">${i + 1}.</h4>
-          <h4 style="display: inline-block"> ${city.name}</h4>
+          <h4 id="city-name" style="display: inline-block">${city.name}</h4>
           <img src="${flag}" alt="${
         city.name
       }" style="width: 20px;display: inline-block; margin-bottom: 6px; margin-left: 6px;">
@@ -214,7 +251,7 @@ async function displayWorstCities() {
       cityDiv.innerHTML = `
         <span style="display: inline-block">
           <h4 style="display: inline-block; margin-right: 6px;">${i + 1}.</h4>
-          <h4 style="display: inline-block"> ${city.name}</h4>
+          <h4 id="city-name" style="display: inline-block">${city.name}</h4>
           <img src="${flag}" alt="${
         city.name
       }" style="width: 20px;display: inline-block; margin-bottom: 6px; margin-left: 6px;">

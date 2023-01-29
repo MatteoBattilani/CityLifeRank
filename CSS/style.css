@@ -14,7 +14,7 @@ body{
 .list{
   display: block;
 }
-.list-item:hover, #back:hover{
+.list-item:hover, #back:hover, #city-name:hover{
   cursor: pointer;
   text-decoration: underline;
 }
