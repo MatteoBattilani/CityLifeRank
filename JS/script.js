@@ -128,12 +128,16 @@ const createHTMLCategories = (categories) => {
     let firstDecimal = +score.toFixed(1).slice(-1);
     html += `<div id="categories-div" class="d-flex">
               <div class='dot' style='background-color: ${category.color};'></div>
-              <div class="paragraph"><p class="mb-0 pb-0">${category.name}</p>`;
+              <div class="categories-text"><p class="mb-0 pb-0">${category.name}</p>`;
 
     if (firstDecimal == 0) {
-      html += `<p class="scoring-text mt-0 pt-0">${score.toFixed(0)}/10</p>`;
+      html += `<p class="scoring-text mt-0 pt-0" style="text-align: left;">${score.toFixed(
+        0
+      )}/10</p>`;
     } else {
-      html += `<p class="scoring-text mt-0 pt-0">${score.toFixed(1)}/10</p>`;
+      html += `<p class="scoring-text mt-0 pt-0" style="text-align: left;">${score.toFixed(
+        1
+      )}/10</p>`;
     }
 
     html += "</div></div>";
