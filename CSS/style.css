@@ -14,7 +14,7 @@ body{
 .list{
   display: block;
 }
-.list-item:hover, #back:hover, #city-name:hover{
+.list-item:hover, #back-button:hover, #city-name:hover{
   cursor: pointer;
   text-decoration: underline;
 }
@@ -39,11 +39,11 @@ body{
 }
 /*---------------------------------------*/
 
-
+/*
 div{
   border: 1px solid black;
 }
-
+*/
 
 /*--Text style for city's description--*/
 .paragraph{

@@ -7,7 +7,7 @@ const worstContainer = document.querySelector("#worst-container");
 const scoringContainer = document.querySelector("#scoring-container");
 const cityDescriptionContainer = document.querySelector("#city-description");
 const backContainer = document.querySelector("#back");
-
+const backButton = document.querySelector("#back-button");
 // -----------------------------------LISTENERS---------------------------------------------------
 
 // Following listeners call the displayTopCities and displayWorstCities functions when the page is refreshed
@@ -73,7 +73,7 @@ scoringContainer.addEventListener("click", async (event) => {
 });
 
 // THIS LISTENER IS ACTIVATED WHEN CLICKING ON THE DIV COINTAINING "TO THE HOME"
-backContainer.addEventListener("click", function () {
+backButton.addEventListener("click", function () {
   location.reload();
 });
 
