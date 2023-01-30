@@ -33,7 +33,7 @@ body{
 
 @media (max-width: 768px) {
   #categories-div {
-    width: 100%;
+    width: 50%;
     text-align: center;
   }
 }
