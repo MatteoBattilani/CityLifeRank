@@ -83,3 +83,26 @@ div{
 .windows-background{
   background-color: #ffffff30;
 }
+
+/*-----------------------------CUSTOM SCROLLBAR-----------------------------*/
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px; 
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #F3F8FC
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #AADCEC
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #0f1b61;
+}
