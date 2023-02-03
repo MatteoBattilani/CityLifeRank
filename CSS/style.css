@@ -25,7 +25,7 @@ body{
   grid-template-columns: repeat(4, 1fr);
 }
 
-/*--Quando si visualizza da mobile, le categorie delle città vengono mostrate su una sola colonna--*/
+/*--When viewing from mobile, the city categories are shown in a single column--*/
 #categories-div {
   width: 25%;
   text-align: center;
@@ -39,11 +39,6 @@ body{
 }
 /*---------------------------------------*/
 
-/*
-div{
-  border: 1px solid black;
-}
-*/
 
 /*--Text style for city's description--*/
 .paragraph{
@@ -63,7 +58,7 @@ div{
   font-weight: 400;
 }
 
-/*--Stile dei puntini colorati che accompagnano il nome delle categorie--*/
+/*--Style of coloured rectangle accompanying category names--*/
 .dot {
   width: 10px;
   height: 50px;
@@ -72,7 +67,7 @@ div{
   margin-right: 10px;
 }
 
-/*--Stile del border della descrizione della città--*/
+/*--Style of the city description border--*/
 .border-container{
   border: 5px;
   border-color: #AADCEC;
