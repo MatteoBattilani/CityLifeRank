@@ -54,7 +54,7 @@ button.addEventListener("click", async (event) => {
     scoringContainer.innerHTML = html;
     backContainer.classList.remove("invisible");
   } catch (error) {
-    console.error(error);
+    alert("A generic error is occurred.");
   }
 });
 
@@ -75,7 +75,7 @@ scoringContainer.addEventListener("click", async (event) => {
 
       createCityScoreHTML(scoresData);
     } catch (error) {
-      console.error(error);
+      alert("A generic error is occurred.");
     }
   }
 });
@@ -99,7 +99,7 @@ scoringContainer.addEventListener("click", async (event) => {
       createCityScoreHTML(scoresData);
       backContainer.classList.remove("invisible");
     } catch (error) {
-      console.error(error);
+      alert("A generic error is occurred.");
     }
   }
 });
@@ -213,7 +213,7 @@ async function displayTopCities() {
       bestContainer.appendChild(cityDiv);
     }
   } catch (error) {
-    console.error(error);
+    alert("A generic error is occurred.");
   }
 }
 
@@ -268,6 +268,6 @@ async function displayWorstCities() {
       worstContainer.appendChild(cityDiv);
     }
   } catch (error) {
-    console.error(error);
+    alert("A generic error is occurred.");
   }
 }
