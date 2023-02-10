@@ -1,0 +1,28 @@
+{
+  "name": "city-life-rank",
+  "version": "1.0.0",
+  "description": "This project is a city search engine that can retrieve information such as descriptions and scores associated with cities in categories such as education, cost of living, venture capital and many others. It's written in HTML, CSS and JavaScript.",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MatteoBattilani/city-life-rank.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MatteoBattilani/city-life-rank/issues"
+  },
+  "homepage": "https://github.com/MatteoBattilani/city-life-rank#readme",
+  "devDependencies": {
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1",
+    "style-loader": "^3.3.1",
+    "css-loader": "^6.7.3"
+  }
+ 
+}
