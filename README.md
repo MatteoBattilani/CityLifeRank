@@ -42,9 +42,8 @@ To use the counter, simply open the file `index.html` in a browser. Type the nam
 The project is structured as follows:
 
 images/ --> a folder that includes the favicon for the web page and the arrow image for the "TO THE HOME" button.
-src/
-└── CSS/
-    └── style.css --> the CSS file that includes the page style
+src/CSS/
+    style.css --> the CSS file that includes the page style
     Js/
     └── index.js --> the JavaScript file that includes all the API's calls
 index.html: the HTML file that includes the page layout and links to the CSS and JavaScript files.
