@@ -19,7 +19,7 @@
   "bugs": {
     "url": "https://github.com/MatteoBattilani/city-life-rank/issues"
   },
-  "homepage": "https://github.com/MatteoBattilani/city-life-rank#readme",
+  "homepage": "https://github.com/MatteoBattilani/city-life-rank/dist/index.html",
   "devDependencies": {
     "css-loader": "^6.7.3",
     "gh-pages": "^5.0.0",
