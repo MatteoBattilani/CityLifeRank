@@ -21,6 +21,9 @@ It provides these main components:
 - CSS
 - JS
 
+**Tools**
+- Webpack
+
 ## How to use it
 
 To use the counter, simply open the file `index.html` in a browser. Type the name of a city in the search bar and choose from the list of results. Otherwise, click on the name of a city within the rankings to view the details of that city directly.
@@ -38,10 +41,16 @@ To use the counter, simply open the file `index.html` in a browser. Type the nam
 
 The project is structured as follows:
 
-- `index.html`: the HTML file that includes the page layout and links to the CSS and JavaScript files.
-- `style.css`: the CSS file that includes the page style.
-- `script.js`: the JavaScript file that includes all the API's calls.  
-- `images/`: a folder that includes the favicon for the web page and the arrow image for the "TO THE HOME" button.
+images/ --> a folder that includes the favicon for the web page and the arrow image for the "TO THE HOME" button.
+src/
+└── CSS/
+    └── style.css --> the CSS file that includes the page style
+    Js/
+    └── index.js --> the JavaScript file that includes all the API's calls
+index.html: the HTML file that includes the page layout and links to the CSS and JavaScript files.
+
+ 
+
 
 
 ## Licence
