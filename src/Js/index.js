@@ -1,4 +1,5 @@
 import "../CSS/style.css";
+import _ from "lodash";
 
 // ----------------------------CONSTANTS AND VARIABLES-----------------------------------------------
 
@@ -33,7 +34,11 @@ button.addEventListener("click", async (event) => {
       `https://api.teleport.org/api/cities/?search=${city}`
     );
     // Get the search results from the API response
-    const searchResults = response.data._embedded["city:search-results"];
+    const searchResults = _.get(
+      response,
+      'data._embedded["city:search-results"]',
+      []
+    );
     let html = "<ol class='list'>";
     const promises = [];
     // Loop through the search results and make a GET request for each city
@@ -44,7 +49,11 @@ button.addEventListener("click", async (event) => {
     const responses = await Promise.all(promises);
     // Loop through the city responses and add the city to the HTML string if it has an urban area
     for (let i = 0; i < responses.length; i++) {
-      if (responses[i].data._links.hasOwnProperty("city:urban_area")) {
+      const urbanAreaLink = _.get(
+        responses[i].data,
+        '_links["city:urban_area"].href'
+      );
+      if (urbanAreaLink) {
         html += `<li class='list-item' data-href='${searchResults[i]._links["city:item"].href}'>${searchResults[i].matching_full_name}</li>`;
       }
     }
@@ -67,13 +76,20 @@ scoringContainer.addEventListener("click", async (event) => {
     try {
       const cityData = await axios.get(event.target.getAttribute("data-href"));
       // The URL for the city's urban area (urbanAreaUrl) and the urban area data (urbanAreaData) is obtained by calling the API.
-      const urbanAreaUrl = cityData.data._links["city:urban_area"].href;
+      const urbanAreaUrl = _.get(
+        cityData.data,
+        '_links["city:urban_area"].href',
+        null
+      );
       const urbanAreaData = await axios.get(urbanAreaUrl);
       // The URL for the scores (scoresUrl) and the scores data (scoresData) is obtained by calling the API.
-      const scoresUrl = urbanAreaData.data._links["ua:scores"].href;
-      let scoresData = await axios.get(scoresUrl);
-
-      scoresData = scoresData.data;
+      const scoresUrl = _.get(
+        urbanAreaData.data,
+        '_links["ua:scores"].href',
+        null
+      );
+      let scoresData = scoresUrl ? await axios.get(scoresUrl) : null;
+      scoresData = _.get(scoresData, "data");
 
       createCityScoreHTML(scoresData);
     } catch (error) {
@@ -97,7 +113,7 @@ scoringContainer.addEventListener("click", async (event) => {
         `https://api.teleport.org/api/urban_areas/slug:${cityName}/scores/`
       );
 
-      const scoresData = cityData.data;
+      const scoresData = _.get(cityData, "data", null);
       createCityScoreHTML(scoresData);
       backContainer.classList.remove("invisible");
     } catch (error) {
@@ -111,9 +127,9 @@ scoringContainer.addEventListener("click", async (event) => {
 // Function used to create description and score of a city
 const createCityScoreHTML = (scoresData) => {
   // Extract the categories, summary, and city score from the data
-  let categories = scoresData.categories;
-  let summary = scoresData.summary;
-  let cityScore = scoresData.teleport_city_score;
+  let categories = _.get(scoresData, "categories", []);
+  let summary = _.get(scoresData, "summary", "");
+  let cityScore = _.get(scoresData, "teleport_city_score", 0);
 
   // Create HTML to display the summary and city score
   let htmlDescription = `<p>${summary}</p> 
@@ -136,11 +152,19 @@ const createHTMLCategories = (categories) => {
   let html = "<div class='categories'>";
   // Loop through each category and create HTML for each
   for (let category of categories) {
-    let score = category.score_out_of_10;
+    let score = _.get(category, "score_out_of_10", 0);
     let firstDecimal = +score.toFixed(1).slice(-1);
     html += `<div id="categories-div" class="d-flex">
-              <div class='dot' style='background-color: ${category.color};'></div>
-              <div class="categories-text"><p class="mb-0 pb-0">${category.name}</p>`;
+              <div class='dot' style='background-color: ${_.get(
+                category,
+                "color",
+                "gray"
+              )};'></div>
+              <div class="categories-text"><p class="mb-0 pb-0">${_.get(
+                category,
+                "name",
+                "no category"
+              )}</p>`;
     // Check if score has one decimal or not
     if (firstDecimal == 0) {
       html += `<p class="scoring-text mt-0 pt-0" style="text-align: left;">${score.toFixed(
