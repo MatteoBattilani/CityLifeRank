@@ -197,16 +197,16 @@ async function displayTopCities() {
     const citiesPromises = cities.map(async (city) => {
       const cityResponse = await axios.get(city.href);
       const cityScores = await axios.get(
-        cityResponse.data._links["ua:scores"].href
+        _.get(cityResponse.data, '_links["ua:scores"].href', null)
       );
       const cityCountry = await axios.get(
-        cityResponse.data._links["ua:countries"][0].href
+        _.get(cityResponse.data, '_links["ua:countries"][0].href', null)
       );
       // Return an object with the city's name, score, and country code.
       return {
-        name: city.name,
-        score: cityScores.data.teleport_city_score,
-        countryCode: cityCountry.data.iso_alpha2,
+        name: _.get(city, "name", "Unknown"),
+        score: _.get(cityScores, "data.teleport_city_score", "no-score"),
+        countryCode: _.get(cityCountry, "data.iso_alpha2", ""),
       };
     });
     // Wait for all the city data promises to resolve and get an array of the fulfilled values.
@@ -221,9 +221,13 @@ async function displayTopCities() {
     // Loop through the top 10 cities and display their information.
     for (let i = 0; i < topCities.length; i++) {
       const city = topCities[i];
-      const countryFlag = `https://restcountries.com/v2/alpha/${city.countryCode}`;
+      const countryFlag = `https://restcountries.com/v2/alpha/${_.get(
+        city,
+        "countryCode",
+        ""
+      )}`;
       const flagResponse = await axios.get(countryFlag);
-      const flag = flagResponse.data.flag;
+      const flag = _.get(flagResponse, "data.flag", "no-flag");
       const cityDiv = document.createElement("div");
       cityDiv.innerHTML = `
         <span style="display: inline-block">
@@ -233,7 +237,7 @@ async function displayTopCities() {
         city.name
       }" style="width: 20px;display: inline-block; margin-bottom: 6px; margin-left: 6px;">
         </span>
-        <p>Teleport City Score: ${city.score.toFixed(2)}</p>
+        <p>Teleport City Score: ${_.get(city, "score", 0).toFixed(2)}</p>
       `;
 
       bestContainer.appendChild(cityDiv);
@@ -256,15 +260,15 @@ async function displayWorstCities() {
     const citiesPromises = cities.map(async (city) => {
       const cityResponse = await axios.get(city.href);
       const cityScores = await axios.get(
-        cityResponse.data._links["ua:scores"].href
+        _.get(cityResponse.data, '_links["ua:scores"].href', null)
       );
       const cityCountry = await axios.get(
-        cityResponse.data._links["ua:countries"][0].href
+        _.get(cityResponse.data, '_links["ua:countries"][0].href', null)
       );
       return {
-        name: city.name,
-        score: cityScores.data.teleport_city_score,
-        countryCode: cityCountry.data.iso_alpha2,
+        name: _.get(city, "name", "Unknown"),
+        score: _.get(cityScores, "data.teleport_city_score", "no-score"),
+        countryCode: _.get(cityCountry, "data.iso_alpha2", ""),
       };
     });
     const citiesWithScores = await Promise.allSettled(citiesPromises);
@@ -277,9 +281,13 @@ async function displayWorstCities() {
     worstContainer.innerHTML = "";
     for (let i = 0; i < topCities.length; i++) {
       const city = topCities[i];
-      const countryFlag = `https://restcountries.com/v2/alpha/${city.countryCode}`;
+      const countryFlag = `https://restcountries.com/v2/alpha/${_.get(
+        city,
+        "countryCode",
+        ""
+      )}`;
       const flagResponse = await axios.get(countryFlag);
-      const flag = flagResponse.data.flag;
+      const flag = _.get(flagResponse, "data.flag", "no-flag");
       const cityDiv = document.createElement("div");
       cityDiv.innerHTML = `
         <span style="display: inline-block">
@@ -289,7 +297,7 @@ async function displayWorstCities() {
         city.name
       }" style="width: 20px;display: inline-block; margin-bottom: 6px; margin-left: 6px;">
         </span>
-        <p>Teleport City Score: ${city.score.toFixed(2)}</p>
+        <p>Teleport City Score: ${_.get(city, "score", 0).toFixed(2)}</p>
       `;
       worstContainer.appendChild(cityDiv);
     }
